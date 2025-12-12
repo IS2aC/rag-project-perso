@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG Education - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2B6CB0;          /* bleu titre #JST */
+            --primary-light: #3182CE;
+            --primary-soft: #E3F2FF;
+            --accent: #38B2AC;           /* vert-eau boutons */
+            --accent-soft: #E6FFFA;
+            --text-main: #1A202C;
+            --text-muted: #718096;
+            --bg-page: #F7FAFC;
+            --card-bg: #FFFFFF;
+            --border-soft: #E2E8F0;
+            --shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.06);
+            --radius-lg: 18px;
+            --radius-md: 14px;
+            --radius-pill: 999px;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg-page);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 32px 16px;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* HEADER / HERO */
+        .header {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-soft);
+            padding: 28px 32px 26px;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            border: 1px solid var(--border-soft);
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .branding-tag {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .branding-tag span {
+            color: var(--primary);
+        }
+
+        .branding-sub {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--text-main);
+            font-style: italic;
+        }
+
+        .header-caption {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .nav-tabs a {
+            text-decoration: none;
+            border-radius: var(--radius-pill);
+            padding: 9px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            border: 1px solid transparent;
+            background: transparent;
+            transition: all 0.2s ease;
+        }
+
+        .nav-tabs a.active {
+            background: var(--primary-soft);
+            color: var(--primary);
+            border-color: rgba(49, 130, 206, 0.35);
+        }
+
+        .nav-tabs a:hover {
+            background: rgba(226, 232, 240, 0.7);
+        }
+
+        /* ZONE PRINCIPALE HAUT (upload + kpi) */
+
+        .top-grid {
+            display: grid;
+            grid-template-columns: 2fr 1.1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .hero-card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-soft);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .hero-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .hero-subtext {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .hero-layout {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 18px;
+            margin-top: 6px;
+        }
+
+        .dropzone {
+            border-radius: var(--radius-md);
+            border: 1px dashed #CBD5E0;
+            background: #F8FAFF;
+            padding: 26px 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .dropzone:hover {
+            border-color: var(--primary-light);
+            background: #EDF5FF;
+        }
+
+        .dropzone-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 18px;
+            background: var(--primary-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .dropzone-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .dropzone-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .corpus-card {
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-soft);
+            background: #FDFEFF;
+            padding: 18px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .corpus-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .corpus-textarea {
+            width: 100%;
+            min-height: 74px;
+            border-radius: 12px;
+            border: 1px solid var(--border-soft);
+            padding: 10px 12px;
+            font-size: 13px;
+            resize: vertical;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .corpus-textarea:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 1px rgba(49, 130, 206, 0.25);
+        }
+
+        .ask-input-wrapper {
+            margin-top: 6px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .ask-input {
+            flex: 1;
+            border-radius: var(--radius-pill);
+            border: 1px solid var(--border-soft);
+            padding: 10px 14px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .ask-input:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 1px rgba(49, 130, 206, 0.25);
+        }
+
+        .btn-ask {
+            border-radius: 999px;
+            border: none;
+            background: var(--accent);
+            color: #FFFFFF;
+            padding: 0 18px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 18px rgba(56, 178, 172, 0.35);
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+
+        .btn-ask:hover {
+            transform: translateY(-1px);
+            background: #2C7A7B;
+            box-shadow: 0 10px 22px rgba(56, 178, 172, 0.4);
+        }
+
+        .kpi-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .kpi-chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .kpi-chip {
+            padding: 4px 10px;
+            border-radius: var(--radius-pill);
+            font-size: 11px;
+            font-weight: 600;
+            background: var(--accent-soft);
+            color: #285E61;
+        }
+
+        .kpi-section {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .kpi-card {
+            padding: 14px 16px;
+            border-radius: 14px;
+            background: #F8FAFF;
+            border: 1px solid #E2E8F0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, border 0.15s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+            border-color: rgba(49, 130, 206, 0.45);
+        }
+
+        .kpi-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .kpi-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-muted);
+        }
+
+        .kpi-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .kpi-badge {
+            font-size: 11px;
+            padding: 4px 9px;
+            border-radius: var(--radius-pill);
+            background: rgba(49, 130, 206, 0.08);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* CONTENU PRINCIPAL BAS */
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2.1fr 1.3fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-soft);
+            padding: 22px 22px 20px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 999px;
+            background: var(--primary-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: var(--primary);
+        }
+
+        .card-title h2 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .status-badge {
+            padding: 3px 10px;
+            border-radius: var(--radius-pill);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            background: #C6F6D5;
+            color: #22543D;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 14px;
+            border: 1px solid var(--border-soft);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 13px;
+        }
+
+        thead {
+            background: linear-gradient(90deg, #2B6CB0, #3182CE);
+            color: #FFFFFF;
+        }
+
+        th {
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        th:first-child {
+            border-top-left-radius: 14px;
+        }
+
+        th:last-child {
+            border-top-right-radius: 14px;
+        }
+
+        tbody tr {
+            background: #FFFFFF;
+            transition: background 0.15s ease;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #F7FAFC;
+        }
+
+        tbody tr:hover {
+            background: #EDF2F7;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #E2E8F0;
+            color: #4A5568;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .btn-action {
+            padding: 4px 10px;
+            margin: 0 3px;
+            border-radius: var(--radius-pill);
+            border: none;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+
+        .btn-update {
+            background: rgba(49, 130, 206, 0.12);
+            color: var(--primary);
+        }
+
+        .btn-delete {
+            background: rgba(245, 101, 101, 0.12);
+            color: #C53030;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
+        }
+
+        .bucket-info {
+            border-radius: 14px;
+            padding: 14px 14px 12px;
+            background: #F0FFF4;
+            border: 1px solid #C6F6D5;
+            margin-bottom: 14px;
+        }
+
+        .bucket-info h3 {
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: #22543D;
+        }
+
+        .bucket-info p {
+            font-size: 13px;
+            color: #2F855A;
+            margin-bottom: 2px;
+        }
+
+        .bucket-stats {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            line-height: 1.6;
+        }
+
+
+        .hero-layout {
+            display: flex;
+            align-items: center;       /* centre verticalement */
+            justify-content: center;   /* centre horizontalement */
+            width: 100%;
+            height: 100%;              /* ou une hauteur fixe si nécessaire */
+        }
+
+
+        .hero-image {
+            width: 250px;
+            display: block;
+            margin: 0 auto 15px auto;
+        }
+
+
+        .dropzone-link {
+            margin-top: 12px;
+            font-size: 13px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+        .dropzone-link:hover {
+            color: var(--primary-light);
+        }
+
+
+        .btn-refresh {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            background: var(--primary-soft);
+            border: 1px solid var(--border-soft);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .2s ease;
+        }
+
+        .btn-refresh svg {
+            stroke: var(--primary);
+            width: 22px;
+            height: 22px;
+        }
+
+        .btn-refresh:hover {
+            background: var(--primary-light);
+            box-shadow: 0 4px 14px rgba(49, 130, 206, 0.25);
+        }
+
+
+
+        .dropzone-link {
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            border: 1px dashed #CBD5E0;
+            background: #F8FAFF;
+            padding: 26px 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: inherit;
+        }
+
+        .dropzone-link:hover {
+            border-color: var(--primary-light);
+            background: #EDF5FF;
+        }
+
+        .btn-refresh {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            background: var(--primary-soft);
+            border: 1px solid var(--border-soft);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .2s ease;
+        }
+
+        .btn-refresh svg {
+            stroke: var(--primary);
+            width: 22px;
+            height: 22px;
+            transition: transform .3s ease;
+        }
+
+        /* Animation légère au hover */
+        .btn-refresh:hover svg {
+            transform: rotate(90deg);
+        }
+
+        .btn-refresh:hover {
+            background: var(--primary-light);
+            box-shadow: 0 4px 14px rgba(49, 130, 206, 0.25);
+        }
+
+
+
+        /* RESPONSIVE */
+
+        @media (max-width: 1024px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .top-grid,
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 20px 12px;
+            }
+
+            .header {
+                padding: 20px 18px;
+            }
+
+            .nav-tabs {
+                width: 100%;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
+
+            .ask-input-wrapper {
+                flex-direction: column;
+            }
+
+            .btn-ask {
+                justify-content: center;
+                height: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- HEADER -->
+    <header class="header">
+        <!-- <button class="btn-refresh" onclick="window.location.reload()"> -->
+        <button class="btn-refresh" onclick="refreshData()">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <path d="M20.49 15A9 9 0 1 1 21 12"></path>
+            </svg>
+        </button>
+
+        <div class="header-left">
+            <div class="branding-tag">Admin Portal <span>#JST</span></div>
+            <div class="branding-sub">« Tout savoir, Tout dire »</div>
+        </div>
+        <nav class="nav-tabs">
+            <a href="/admin" class="active">Dashboard</a>
+            <a href="/admin_integration">Intégration</a>
+        </nav>
+    </header>
+
+    <!-- HERO UPLOAD + KPI -->
+    <section class="top-grid">
+        <div class="hero-card">
+            <div>
+                <h2 class="hero-title">Enrichir la base de connaissance</h2>
+            </div>
+        
+            <div class="hero-layout">
+                <label class="dropzone">
+                    <a href="/admin_integration" class="dropzone-link">
+                        <div class="dropzone-icon">+</div>
+                        <div class="dropzone-title">Ajouter un document</div>
+                        <p class="dropzone-hint">Accéder à la page d’intégration</p>
+                    </a>
+                </label>
+            </div>
+        </div>
+
+        <!-- KPI STACK -->
+        <aside class="hero-card" style="gap:14px;">
+            <div class="kpi-stack">
+                <div class="kpi-chip-row">
+                    <span class="kpi-chip">Documents actifs</span>
+                    <span class="kpi-chip">Cours disponibles</span>
+                    <span class="kpi-chip">Requêtes totales</span>
+                </div>
+            </div>
+            <div class="kpi-section">
+                <div class="kpi-card">
+                    <div class="kpi-left">
+                        <span class="kpi-label">Documents actifs</span>
+                        <span class="kpi-value">{{doc_actifs}}</span>
+                    </div>
+                    <span class="kpi-badge">À jour</span>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-left">
+                        <span class="kpi-label">Cours disponibles</span>
+                        <span class="kpi-value">999</span>
+                    </div>
+                    <span class="kpi-badge">Catalogue</span>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-left">
+                        <span class="kpi-label">Requêtes totales</span>
+                        <span class="kpi-value">{{number_of_requests}}</span>
+                    </div>
+                    <span class="kpi-badge">Historique</span>
+                </div>
+            </div>
+        </aside>
+    </section>
+
+    <!-- CONTENU PRINCIPAL -->
+    <section class="main-content">
+        <!-- Liste documents -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="card-icon">📄</div>
+                    <h2>Liste des documents</h2>
+                </div>
+                <span class="status-badge">Actif</span>
+            </div>
+            <div class="table-wrapper">
+                <table id="documentsTable">
+                    <thead>
+                    <tr>
+                        <th>Cours</th>
+                        <th>Description</th>
+                        <th style="width:150px;">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- Lignes générées par JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Infos Bucket -->
+        <aside class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="card-icon">🗄️</div>
+                    <h2>Bucket MinIO</h2>
+                </div>
+            </div>
+            <div class="bucket-info">
+                <h3>Informations de stockage</h3>
+                <p><strong>Bucket :</strong> documents-edu</p>
+                <p><strong>Endpoint :</strong> localhost:9000</p>
+                <p><strong>Status :</strong> <span class="status-badge">Connecté</span></p>
+            </div>
+            <div class="bucket-stats">
+                📊 Taille totale : 2.4 GB<br>
+                📁 Fichiers : 24 documents<br>
+                🔄 Dernière synchro : ...
+            </div>
+        </aside>
+    </section>
+</div>
+
+<script>
+    // Chargement des documents
+    async function loadDocuments() {
+        try {
+            const response = await fetch('/list_doc');
+            const data = await response.json();
+
+            if (data.documents !== "null") {
+                const tbody = document.querySelector('#documentsTable tbody');
+                tbody.innerHTML = '';
+
+                data.documents.forEach(doc => {
+                    const row = `
+                        <tr>
+                            <td>${doc.course}</td>
+                            <td>${doc.description}</td>
+                            <td>
+                                <button class="btn-action btn-update" onclick="updateDoc('${doc.path_bucket}')">Update</button>
+                                <button class="btn-action btn-delete" onclick="deleteDoc('${doc.path_bucket}')">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.insertAdjacentHTML('beforeend', row);
+                });
+            }
+        } catch (error) {
+            console.error('Error loading documents:', error);
+        }
+    }
+
+    async function deleteDoc(path) {
+        const filename = path.split('/').pop();
+        if (confirm(`Êtes-vous sûr de vouloir supprimer ${filename} ?`)) {
+            try {
+                const formData = new FormData();
+                formData.append('filename', filename);
+
+                const response = await fetch('/delete_doc', {
+                    method: 'DELETE',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    alert('Document supprimé avec succès !');
+                    loadDocuments();
+                }
+            } catch (error) {
+                console.error('Error deleting document:', error);
+            }
+        }
+    }
+
+    
+    async function refreshData() {
+        try {
+            // Animation: rotation pendant le load
+            const icon = document.querySelector('.btn-refresh svg');
+            icon.style.transition = "transform 0.5s linear";
+            icon.style.transform = "rotate(180deg)";
+
+            const response = await fetch("/refresh_data", { method: "GET" });
+
+            if (!response.ok) {
+                console.error("Erreur serveur");
+                return;
+            }
+
+            const result = await response.json();
+            console.log("Données rafraîchies :", result);
+
+            // Remettre l'icône en position normale
+            setTimeout(() => {
+                icon.style.transform = "rotate(0deg)";
+            }, 600);
+
+        } catch (err) {
+            console.error("Erreur lors du rafraîchissement :", err);
+        }
+    }
+
+
+    function updateDoc(path) {
+        alert('Fonctionnalité Update disponible dans la prochaine version');
+    }
+
+    // dropzone click -> input file
+    document.querySelector('.dropzone').addEventListener('click', () => {
+        document.getElementById('fileInput').click();
+    });
+
+    loadDocuments();
+</script>
+</body>
+</html>
+

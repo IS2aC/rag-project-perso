@@ -1,0 +1,5 @@
+rag_projects_test/rag-eda/pdfs
+rag_projects_test/rag-eda/faiss_index
+rag_projects_test/rag-eda/__pycache__
+rag_projects_test/application/rag/__pycache__
+rag_projects_test/application/__pycache__

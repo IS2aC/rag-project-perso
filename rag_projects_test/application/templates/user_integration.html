@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG Education - Intégration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2B6CB0;
+            --primary-light: #3182CE;
+            --primary-soft: #E3F2FF;
+            --accent: #38B2AC;
+            --accent-soft: #E6FFFA;
+            --danger: #E53E3E;
+            --danger-soft: #FED7D7;
+            --text-main: #1A202C;
+            --text-muted: #718096;
+            --bg-page: #F7FAFC;
+            --card-bg: #FFFFFF;
+            --border-soft: #E2E8F0;
+            --shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.06);
+            --radius-lg: 18px;
+            --radius-md: 14px;
+            --radius-pill: 999px;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg-page);
+            min-height: 100vh;
+            padding: 32px 16px;
+            color: var(--text-main);
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        /* HEADER commun #JST */
+        .header {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-soft);
+            padding: 24px 28px 22px;
+            margin-bottom: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            border: 1px solid var(--border-soft);
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .branding-tag {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .branding-tag span {
+            color: var(--primary);
+        }
+
+        .branding-sub {
+            font-size: 16px;
+            font-weight: 500;
+            font-style: italic;
+        }
+
+        .header-caption {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .nav-tabs a {
+            text-decoration: none;
+            border-radius: var(--radius-pill);
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            border: 1px solid transparent;
+            background: transparent;
+            transition: all 0.2s ease;
+        }
+
+        .nav-tabs a.active {
+            background: var(--primary-soft);
+            color: var(--primary);
+            border-color: rgba(49, 130, 206, 0.35);
+        }
+
+        .nav-tabs a:hover {
+            background: rgba(226, 232, 240, 0.7);
+        }
+
+        /* CARD FORMULAIRE */
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-soft);
+            padding: 26px 26px 24px;
+        }
+
+        .card-header {
+            text-align: left;
+            margin-bottom: 22px;
+            border-bottom: 1px solid var(--border-soft);
+            padding-bottom: 16px;
+        }
+
+        .card-header h2 {
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .card-header h2 span.icon-chip {
+            width: 30px;
+            height: 30px;
+            border-radius: 999px;
+            background: var(--primary-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        .card-header p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-main);
+        }
+
+        .form-group label .required {
+            color: var(--danger);
+            margin-left: 2px;
+        }
+
+        .form-hint {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 400;
+            margin-top: 3px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 11px 13px;
+            border-radius: 12px;
+            border: 1px solid var(--border-soft);
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+            background: #FDFEFF;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 1px rgba(49, 130, 206, 0.25);
+            background: #FFFFFF;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 110px;
+        }
+
+        /* UPLOAD ZONE */
+
+        .file-upload-wrapper {
+            position: relative;
+        }
+
+        .file-upload {
+            border-radius: var(--radius-md);
+            border: 1px dashed #CBD5E0;
+            background: #F8FAFF;
+            padding: 28px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .file-upload:hover {
+            border-color: var(--primary-light);
+            background: #EDF5FF;
+        }
+
+        .file-upload.dragover {
+            border-color: var(--primary-light);
+            background: #E3F2FF;
+        }
+
+        .file-upload input[type="file"] {
+            display: none;
+        }
+
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 16px;
+            background: var(--primary-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: var(--primary);
+            margin: 0 auto 10px;
+        }
+
+        .file-upload-text {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .file-upload-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .file-selected {
+            margin-top: 12px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: var(--accent-soft);
+            border: 1px solid #B2F5EA;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .file-selected.show {
+            display: flex;
+        }
+
+        .file-selected-icon {
+            font-size: 20px;
+        }
+
+        .file-selected-name {
+            font-weight: 600;
+        }
+
+        .file-selected-size {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .file-remove {
+            margin-left: auto;
+            border-radius: var(--radius-pill);
+            border: none;
+            background: var(--danger-soft);
+            color: #742A2A;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s ease, transform 0.15s ease;
+        }
+
+        .file-remove:hover {
+            background: #FEB2B2;
+            transform: translateY(-1px);
+        }
+
+        /* BOUTON SUBMIT */
+
+        .btn-submit {
+            width: 100%;
+            border-radius: var(--radius-pill);
+            border: none;
+            background: var(--accent);
+            color: #FFFFFF;
+            padding: 13px 18px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 18px;
+            letter-spacing: 0.02em;
+            box-shadow: 0 10px 22px rgba(56, 178, 172, 0.4);
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, opacity 0.15s ease;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-1px);
+            background: #2C7A7B;
+            box-shadow: 0 12px 26px rgba(56, 178, 172, 0.45);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* ALERTES */
+
+        .alert {
+            padding: 10px 12px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            display: none;
+            animation: slideDown 0.25s ease;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: #C6F6D5;
+            color: #22543D;
+            border-left: 3px solid #38A169;
+        }
+
+        .alert-error {
+            background: #FED7D7;
+            color: #742A2A;
+            border-left: 3px solid #E53E3E;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* LOADING OVERLAY */
+
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .loading-spinner {
+            background: #FFFFFF;
+            padding: 26px 32px 24px;
+            border-radius: 18px;
+            box-shadow: var(--shadow-soft);
+            text-align: center;
+        }
+
+        .spinner {
+            width: 42px;
+            height: 42px;
+            border-radius: 999px;
+            border: 4px solid #E2E8F0;
+            border-top-color: var(--primary);
+            animation: spin 0.9s linear infinite;
+            margin: 0 auto 14px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 22px 12px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-tabs {
+                width: 100%;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
+
+            .card {
+                padding: 20px 18px 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- HEADER commun -->
+    <div class="header">
+        <div class="header-left">
+            <div class="branding-tag">KnowLedge Management <span>#JST</span> -------- Not yet Ready --------</div>
+        </div>
+    </div>
+
+    <!-- CARD FORMULAIRE -->
+    <div class="card">
+        <div class="card-header">
+            <h2>
+                <span class="icon-chip">📤</span>
+                Formulaire d’intégration de document
+            </h2>
+            <p>Ajoute un document pédagogique pour l’exposer à #JST.</p>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <form id="uploadForm">
+            <div class="form-group">
+                <label for="course">
+                    Nom du cours
+                    <span class="required">*</span>
+                    <span class="form-hint">Ex : Mathématique MPSI, Physique Chimie 1ère C</span>
+                </label>
+                <input
+                    type="text"
+                    id="course"
+                    name="course"
+                    class="form-control"
+                    placeholder="Entrez le nom du cours"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="description">
+                    Description
+                    <span class="required">*</span>
+                    <span class="form-hint">Décrivez brièvement le contenu du document.</span>
+                </label>
+                <textarea
+                    id="description"
+                    name="description"
+                    class="form-control"
+                    placeholder="Ex : Cours portant sur les fondamentaux de la thermodynamique"
+                    required
+                ></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    Fichier
+                    <span class="required">*</span>
+                    <span class="form-hint">PDF, DOCX, TXT – Taille max : 50 Mo</span>
+                </label>
+                <div class="file-upload-wrapper">
+                    <label for="file" class="file-upload" id="fileUploadArea">
+                        <div class="file-icon">📁</div>
+                        <div class="file-upload-text">Clique pour sélectionner ou glisse un fichier ici</div>
+                        <div class="file-upload-hint">Formats acceptés : PDF, DOCX, TXT</div>
+                        <input
+                            type="file"
+                            id="file"
+                            name="file"
+                            accept=".pdf,.docx,.txt"
+                            required
+                        >
+                    </label>
+
+                    <div class="file-selected" id="fileSelected">
+                        <span class="file-selected-icon">📄</span>
+                        <div>
+                            <div class="file-selected-name" id="fileName"></div>
+                            <div class="file-selected-size" id="fileSize"></div>
+                        </div>
+                        <button type="button" class="file-remove" id="fileRemove">Retirer</button>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit" id="submitBtn">
+                Valider et intégrer le document
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Overlay chargement -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner">
+        <div class="spinner"></div>
+        <div style="font-weight:600;color:var(--text-main);font-size:14px;">
+            Téléchargement en cours...
+        </div>
+    </div>
+</div>
+
+<script>
+    const fileInput = document.getElementById('file');
+    const fileUploadArea = document.getElementById('fileUploadArea');
+    const fileSelected = document.getElementById('fileSelected');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const fileRemove = document.getElementById('fileRemove');
+    const uploadForm = document.getElementById('uploadForm');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const alertContainer = document.getElementById('alertContainer');
+    const submitBtn = document.getElementById('submitBtn');
+
+    fileInput.addEventListener('change', function (e) {
+        handleFileSelect(e.target.files[0]);
+    });
+
+    fileUploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        fileUploadArea.classList.add('dragover');
+    });
+
+    fileUploadArea.addEventListener('dragleave', () => {
+        fileUploadArea.classList.remove('dragover');
+    });
+
+    fileUploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        fileUploadArea.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            fileInput.files = e.dataTransfer.files;
+            handleFileSelect(file);
+        }
+    });
+
+    function handleFileSelect(file) {
+        if (file) {
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            fileSelected.classList.add('show');
+        }
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    }
+
+    fileRemove.addEventListener('click', () => {
+        fileInput.value = '';
+        fileSelected.classList.remove('show');
+    });
+
+    uploadForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(uploadForm);
+        loadingOverlay.classList.add('show');
+        submitBtn.disabled = true;
+
+        try {
+            const response = await fetch('/add_doc', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            loadingOverlay.classList.remove('show');
+            submitBtn.disabled = false;
+
+            if (response.ok) {
+                showAlert('success', `✅ Document "${result.file}" ajouté avec succès !`);
+                uploadForm.reset();
+                fileSelected.classList.remove('show');
+
+                setTimeout(() => {
+                    window.location.href = '/admin';
+                }, 2000);
+            } else {
+                showAlert('error', '❌ Erreur lors de l’ajout du document.');
+            }
+        } catch (error) {
+            loadingOverlay.classList.remove('show');
+            submitBtn.disabled = false;
+            showAlert('error', '❌ Erreur de connexion au serveur.');
+            console.error('Error:', error);
+        }
+    });
+
+    function showAlert(type, message) {
+        const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+        alertContainer.innerHTML =
+            `<div class="alert ${alertClass} show">${message}</div>`;
+        setTimeout(() => {
+            const alert = alertContainer.querySelector('.alert');
+            if (alert) alert.classList.remove('show');
+        }, 5000);
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat RAG – Assistant IA</title>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            padding: 25px;
+            text-align: center;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+
+        .header { text-align: center; margin-bottom: 60px; }
+        .header h1 { font-size: 2.5rem; color: #1a1a1a; font-weight: 600; }
+        .header h1 .hashtag { color: #3b82f6; }
+        .header h1 .italic { color: #666; font-style: italic; }
+        .header p { color: #666; margin-top: 15px; }
+
+        .chat-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 14px 18px;
+            margin-bottom: 15px;
+            border-radius: 14px;
+            line-height: 1.4rem;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+        }
+
+        .user {
+            background: #3b82f6;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot {
+            background: white;
+            color: #333;
+            border: 1px solid #e5e7eb;
+            border-bottom-left-radius: 4px;
+        }
+
+        .input-section {
+            padding: 20px;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+
+        .input-wrapper {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 18px 70px 18px 20px;
+            border: 1px solid #d1d5db;
+            border-radius: 14px;
+            resize: none;
+            font-size: 1rem;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .send-btn {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 46px;
+            height: 46px;
+            background: #3b82f6;
+            border: none;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .send-btn svg { width: 22px; fill: white; }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1><span class="hashtag">#JST</span> ou <span class="italic">"Mr. Je sais tout"</span></h1>
+    </div>
+
+    <div id="chat-box" class="chat-container"></div>
+
+    <div class="input-section">
+        <div class="input-wrapper">
+            <textarea id="inputMessage" class="input-field" placeholder="Pose ta question…" rows="1"></textarea>
+
+            <button class="send-btn" onclick="sendMessage()">
+                <svg viewBox="0 0 24 24">
+                    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const input = document.getElementById("inputMessage");
+        const chatBox = document.getElementById("chat-box");
+
+        function addMessage(content, sender) {
+            const div = document.createElement("div");
+            div.className = "message " + sender;
+            div.textContent = content;
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const text = input.value.trim();
+            if (!text) return;
+
+            addMessage(text, "user");
+            input.value = "";
+
+            // Appel backend FastAPI
+            try {
+                const res = await fetch(`/chat?prompt=${encodeURIComponent(text)}`);
+                const data = await res.json();
+
+                addMessage(data.message, "bot");
+
+            } catch (err) {
+                addMessage("⚠️ Erreur de connexion au serveur.", "bot");
+            }
+        }
+
+        // Envoi avec ENTER
+        input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Auto-resize du textarea
+        input.addEventListener("input", () => {
+            input.style.height = "auto";
+            input.style.height = Math.min(input.scrollHeight, 150) + "px";
+        });
+    </script>
+
+</body>
+</html>

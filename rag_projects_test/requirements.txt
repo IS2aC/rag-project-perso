@@ -1,0 +1,15 @@
+fastapi 
+uvicorn 
+python-multipart 
+minio
+pandas
+Jinja2
+langchain 
+langchain-community 
+faiss-cpu 
+ollama
+pypdf
+nltk
+azure-ai-inference
+azure-core
+python-dotenv
