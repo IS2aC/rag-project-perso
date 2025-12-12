@@ -1,0 +1,12 @@
+# Models OCR(Optimal Character Recognition)
+
+- Model 1 : **olmocr**
+    - link github: https://github.com/allenai/olmocr
+    - web link: https://olmocr.allenai.org/'
+
+- Model 2 : **llama 3.2-vision**
+    - link code github  : https://ollama.com/library/llama3.2-vision
+
+
+- Model 3 : **qwen3-vl:2b**
+    - link : https://ollama.com/library/qwen3-vl:2b
